@@ -24,19 +24,19 @@ shinyUI(fluidPage(
       selectInput(inputId = 'input.lake', 
                   label = 'Choose lake', 
                   choices = list(NorthernLakes = c('All northern lakes',
-                              'Allequash',
-                              'Big Musky',
-                              'Crystal',
-                              'Crystal Bog',
-                              'Sparkling',
-                              'Trout',
-                              'Trout Bog'),
-                              `Southern Lakes` = c(
-                              'All southern lakes',
-                              'Mendota',
-                              'Monona',
-                              'Fish',
-                              'Wingra'))),
+                                                   'Allequash',
+                                                   'Big Musky',
+                                                   'Crystal',
+                                                   'Crystal Bog',
+                                                   'Sparkling',
+                                                   'Trout',
+                                                   'Trout Bog'),
+                                 `Southern Lakes` = c(
+                                   'All southern lakes',
+                                   'Mendota',
+                                   'Monona',
+                                   'Fish',
+                                   'Wingra'))),
       selectInput(inputId = 'input.vars', 
                   label = 'Choose variable', 
                   choices = list(Physical = c('Water Temperature (°C)',
@@ -81,8 +81,8 @@ shinyUI(fluidPage(
     # Show the tabs 
     mainPanel(
       tabsetPanel(
-        tabPanel("Data", plotOutput("distPlot"))
-        # tabPanel("Map", leafletOutput("myMap"))
+        tabPanel("Data", plotOutput("distPlot")),
+        tabPanel("Map", leafletOutput("myMap"))
       )
     )
     # mainPanel(

@@ -51,7 +51,7 @@ loadLTERions <- function() {
 
 LTERtemp = 
   loadLTERtemp() %>%
-  select(-flagdepth) %>% 
+  dplyr::select(-flagdepth) %>% 
   mutate(across(everything(), ~replace(., .<0 , NA))) %>%
   rename_at(vars(wtemp:frlight), ~ str_c("value_",.)) %>%
   rename_at(vars(flagwtemp:flagfrlight), ~ str_c("error_",.)) %>%
@@ -59,7 +59,7 @@ LTERtemp =
   pivot_longer(-(lakeid:event), names_to = c('.value','item'), names_sep = '_') %>%
   filter(!is.na(value) & value>= 0) %>%
   filter(!str_detect(error,'A|K|L|H') | is.na(error)) %>%
-  select(-error) #%>%
+  dplyr::select(-error) #%>%
 # pivot_wider(names_from = item, values_from = value) 
 
 LTERnutrients = loadLTERnutrients() %>%
@@ -72,7 +72,7 @@ LTERnutrients = loadLTERnutrients() %>%
   pivot_longer(-(lakeid:event), names_to = c('.value','item'), names_sep = '_') %>%
   filter(!is.na(value) & value>= 0) %>%
   filter(!str_detect(error,'A|K|L|H') | is.na(error)) %>%
-  select(-error) %>% 
+  dplyr::select(-error) %>% 
   mutate(value = case_when(str_detect(item, ".sloh") ~ value*1000, #change sloh from mg to µg
                            TRUE ~ value)) %>% 
   mutate(item = case_when(str_detect(item, ".sloh") ~  str_remove(item, ".sloh"),
@@ -90,7 +90,7 @@ LTERions = loadLTERions() %>%
   pivot_longer(-(lakeid:event), names_to = c('.value','item'), names_sep = '_') %>%
   filter(!is.na(value) & value>= 0) %>%
   filter(!str_detect(error,'A|K|L|H') | is.na(error)) %>%
-  select(-error)
+  dplyr::select(-error)
 
 matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','no3no2','nh4',
                                   'totnuf','totnf','drp','totpuf','totpf',
@@ -140,7 +140,7 @@ allLTER = LTERnutrients %>% bind_rows(LTERtemp) %>% bind_rows(LTERions) %>%
                               lakeid == 'ME' ~ 'Mendota',
                               lakeid == 'MO' ~ 'Monona',
                               lakeid == 'FI' ~ 'Fish',
-                              lakeid == 'WI' ~ 'Wingra',))
+                              lakeid == 'WI' ~ 'Wingra'))
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -163,14 +163,14 @@ shinyServer(function(input, output) {
     b = allLTER %>% 
       filter(lakename %in% lakes) %>% 
       filter(item == varname()) %>% 
-      group_by(depth) %>% tally() %>% filter(n > 150) %>% pull(depth)
+      group_by(depth) %>% tally() %>% filter(n > 80) %>% pull(depth)
     return(b)
   })
   
   
   ## used to find depths dependent on data
   output$datadepths <- renderUI({
-    selectInput("depths", "Select depth (m)", choices = getdepths(), selected = 0)
+    selectInput("depths", "select depth (m)", choices = getdepths(), selected = 0)
   })
   
   allLTER_filtered <- reactive({ 
@@ -234,11 +234,11 @@ shinyServer(function(input, output) {
     })
   
   # # Make map 
-  # map = leaflet(data = lakelocations) %>%
-  #   addTiles() %>%
-  #   addMarkers(~Long, ~Lat, popup = ~as.character(Lake), label = ~as.character(Lake)) %>%
-  #   setView(-89.6, 44.5, zoom = 6)
-  # output$myMap = renderLeaflet(map)
-
+  map = leaflet(data = lakelocations) %>%
+    addTiles() %>%
+    addMarkers(~Long, ~Lat, popup = ~as.character(Lake), label = ~as.character(Lake)) %>%
+    setView(-89.6, 44.5, zoom = 6)
+  output$myMap = renderLeaflet(map)
+  
   
 })
