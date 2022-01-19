@@ -75,6 +75,9 @@ shinyUI(fluidPage(
       # selectInput(inputId = 'input.depth', 
       #             label = 'Choose depth', 
       #             choices = c(0:20)),
+      # checkboxInput(inputId = "scales", label = 'Free y-axis', value = FALSE),
+      checkboxGroupInput(inputId = "scales", label = c('Options'), choices = c('Free y-axis', 'Log y-axis')),
+      
       downloadButton(outputId = 'downloadImage', 'Download plot'),
     ),
     

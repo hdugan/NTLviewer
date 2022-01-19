@@ -125,9 +125,9 @@ matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','
                                   'Sulfate (mg/L)',
                                   'Chloride (mg/L)',
                                   'Specific Conductance (µS/cm)'),
-                        url = c(rep('https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-ntl.29.8',3),
+                        url = c(rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=29&revision=29',3),
                           rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=1&revision=52',13),
-                          rep('https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-ntl.2.34',7)))
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=2&revision=34',7)))
 
 lakelocations = data.frame(Lake = c("Allequash Lake", "Big Muskellunge Lake", 
                                     "Crystal Bog", "Crystal Lake", "Sparkling Lake", "Trout Bog", 
@@ -168,7 +168,7 @@ shinyServer(function(input, output) {
   # Get url of dataset name from matchtable
   output$urlname <- renderUI({
     a <- matchtable %>% dplyr::filter(names == input$input.vars) %>% dplyr::pull(url)
-    url <- a("EDI Dataset Page", href = a)
+    url <- a("EDI Dataset Page", href = a, target="_blank")
     tagList("A friendly reminder to please cite data! Data citation for this dataset can be found here: ", url)
   })
   
@@ -222,10 +222,18 @@ shinyServer(function(input, output) {
     
     p = if(input$input.lake == 'All northern lakes') {
       ggplot(allLTER_filtered() %>% filter(lakename %in% c('Allequash','Big Musky','Crystal','Crystal Bog','Sparkling','Trout','Trout Bog'))) +
-        facet_wrap(~lakename)
+        if('Free y-axis' %in% input$scales) {
+          facet_wrap(~lakename, scales = "free_y") 
+        } else {
+          facet_wrap(~lakename)
+        }
     } else if (input$input.lake == 'All southern lakes') {
       ggplot(allLTER_filtered() %>% filter(lakename %in% c('Mendota','Monona','Fish','Wingra'))) +
-        facet_wrap(~lakename)
+        if('Free y-axis' %in% input$scales) {
+          facet_wrap(~lakename, scales = "free_y") 
+        } else {
+          facet_wrap(~lakename)
+        }
     } else {
       ggplot(allLTER_filtered() %>% filter(lakename == input$input.lake))
     }
@@ -238,6 +246,9 @@ shinyServer(function(input, output) {
       p = p +
         geom_line(aes(x = sampledate, y = value)) +
         geom_point(aes(x = sampledate, y = value), size = 0.4)
+    }
+    if ('Log y-axis' %in% input$scales) {
+      p = p + scale_y_log10()
     }
     p = p +
       ylab(input$input.vars) +
