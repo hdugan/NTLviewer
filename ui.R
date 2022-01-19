@@ -93,5 +93,8 @@ shinyUI(fluidPage(
   ),
   # Footer
   hr(),
-  print("All data from https://lter.limnology.wisc.edu/data. This material is based upon work supported by the National Science Foundation under Cooperative Agreement #DEB-2025982, NTL LTER. Any opinions, findings, conclusions, or recommendations expressed in the material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.")
+  # print(textOutput("urlname"))
+  print(uiOutput("urlname")),
+  p("This material is based upon work supported by the National Science Foundation under Cooperative Agreement #DEB-2025982, NTL LTER. Any opinions, findings, conclusions, or recommendations expressed in the material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.", 
+    align="left", style = "font-size:11px; color: #751e04;"),
 ))
