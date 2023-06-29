@@ -63,7 +63,10 @@ shinyUI(fluidPage(
                                    'Potassium (mg/L)',
                                    'Sulfate (mg/L)',
                                    'Chloride (mg/L)',
-                                   'Specific Conductance (µS/cm)')),
+                                   'Specific Conductance (µS/cm)'),
+                                 Secchi = c(
+                                   'Secchi with viewer',
+                                   'Secchi without viewer')),
                   selected = 'Water Temperature (degC)'),
       
       uiOutput("datadepths"),

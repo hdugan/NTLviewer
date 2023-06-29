@@ -1,0 +1,13 @@
+name: ntlviewer
+title: NTLviewer
+username: hdugan
+account: hdugan
+server: data-viz.it.wisc.edu
+hostUrl: https://data-viz.it.wisc.edu/__api__
+appId: 495
+bundleId: 3029
+url: https://data-viz.it.wisc.edu/content/b1b86b86-b660-4188-b551-b5f0cecc1dbd/
+when: 1688049374.04481
+lastSyncTime: 1688049374.04481
+asMultiple: FALSE
+asStatic: FALSE

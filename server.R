@@ -7,53 +7,45 @@ library(lubridate)
 library(leaflet)
 
 loadLTERnutrients <- function() {
-  # Package ID: knb-lter-ntl.1.11 Cataloging System:https://pasta.lternet.edu.
+  # Package ID: knb-lter-ntl.1.59 Cataloging System:https://pasta.edirepository.org.
   # Data set title: North Temperate Lakes LTER:
   # Chemical Limnology of Primary Study Lakes: Nutrients, pH and Carbon 1981 - current
-  inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/1/52/802d63a4c35050b09ef6d1e7da3efd3f"
-  # infile1 <- tempfile()
-  # download.file(inUrl1, infile1, method="curl")
-  # 
-  # LTERnutrients <- read_csv(infile1, skip=1, quote ='"',guess_max = 20000, col_names=c(
-  #   "lakeid","year4","daynum","sampledate","depth","rep","sta","event","ph","phair","alk","dic","tic","doc","toc",
-  #   "no3no2","no2","nh4","totnf","totnuf","totpf","totpuf","drsif","brsif","brsiuf","tpm","totnuf_sloh","no3no2_sloh",
-  #   "nh4_sloh","kjdl_n_sloh","totpuf_sloh","drp_sloh","drsif_sloh","flagdepth","flagph","flagphair","flagalk","flagdic",
-  #   "flagtic","flagdoc","flagtoc","flagno3no2","flagno2","flagnh4","flagtotnf","flagtotnuf","flagtotpf","flagtotpuf",
-  #   "flagdrsif","flagbrsif","flagbrsiuf","flagtpm","flagtotnuf_sloh","flagno3no2_sloh","flagnh4_sloh","flagkjdl_n_sloh",
-  #   "flagtotpuf_sloh","flagdrp_sloh","flagdrsif_sloh"))
+  
+  inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/1/59/0ff1fd13116d6097376e3745194cdc5f" 
+  
   LTERnutrients = read_csv(inUrl1)
 }
-loadLTERtemp <- function() {
-  # Package ID: knb-lter-ntl.29.8 Cataloging System:https://pasta.edirepository.org.
-  # Data set title: North Temperate Lakes LTER:
-  # Physical Limnology of Primary Study Lakes 1981 - current
-  
-  inUrl3  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/29/28/03e232a1b362900e0f059859abe8eb97"
-  # infile3 <- tempfile()
-  # download.file(inUrl3,infile3,method="curl")
-  # 
-  # LTERtemp <-read_csv(infile3, skip=1, quote ='"',guess_max = 100000, col_names=c(
-  #   "lakeid" ,"year4" ,"daynum" ,"sampledate" ,"depth" ,"rep" ,"sta" ,"event" ,"wtemp" ,"o2" ,"o2sat" ,"deck" ,
-  #   "light" ,"frlight" ,"flagdepth" ,"flagwtemp" ,"flago2" ,"flago2sat" ,"flagdeck" ,"flaglight" ,"flagfrlight"))
-  # 
-  LTERtemp = read_csv(inUrl3)
-}
+
 loadLTERions <- function() {
-  # Package ID: knb-lter-ntl.2.34 Cataloging System:https://pasta.edirepository.org.
+  # Package ID: knb-lter-ntl.2.37 Cataloging System:https://pasta.edirepository.org.
   # Data set title: North Temperate Lakes LTER:
   # Chemical Limnology of Primary Study Lakes: Major Ions 1981 - current
   
-  inUrl2  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/2/34/3f740d0b77b3caf6930a8ce9cca4306a"
-  # infile2 <- tempfile()
-  # download.file(inUrl2,infile2,method="curl")
-  # 
-  # LTERions <-read_csv(infile2, skip=1, quote ='"',guess_max = 20000, col_names=c(
-  #   "lakeid","year4","daynum","sampledate","depth","rep","sta","event","cl","so4","ca","mg","na","k","fe","mn",
-  #   "cond","flagcl","flagso4","flagca","flagmg","flagna","flagk","flagfe","flagmn","flagcond"))
+  inUrl2  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/2/37/0701a84081989bb1ff37d621a6c4560a" 
   
   LTERions = read_csv(inUrl2)
   
 }
+
+loadLTERtemp <- function() {
+  # Package ID: knb-lter-ntl.29.35 Cataloging System:https://pasta.edirepository.org.
+  # Data set title: North Temperate Lakes LTER:
+  # Physical Limnology of Primary Study Lakes 1981 - current
+  
+  inUrl3  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/29/35/03e232a1b362900e0f059859abe8eb97"
+  
+  LTERtemp = read_csv(inUrl3)
+}
+
+loadLTERsecchi <- function() {
+  # Package ID: knb-lter-ntl.31.32 Cataloging System:https://pasta.edirepository.org.
+  # Data set title: North Temperate Lakes LTER: Secchi Disk Depth; Other Auxiliary Base Crew Sample Data 1981 - current.
+  
+  inUrl4  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/31/32/d01c782e0601d2217b94dd614444bd33"
+  
+  LTERsecchi = read_csv(inUrl4)
+}
+
 
 LTERtemp = 
   loadLTERtemp() %>%
@@ -65,9 +57,17 @@ LTERtemp =
   pivot_longer(-(lakeid:event), names_to = c('.value','item'), names_sep = '_') %>%
   filter(!is.na(value) & value>= 0) %>%
   filter(!str_detect(error,'A|K|L|H') | is.na(error)) %>%
-  dplyr::select(-error) #%>%
-# pivot_wider(names_from = item, values_from = value) 
+  dplyr::select(-error) 
 
+LTERsecchi = 
+  loadLTERsecchi() %>%
+  mutate(across(everything(), ~replace(., .<0 , NA))) %>%
+  select(lakeid:secnview) |> 
+  pivot_longer(-(lakeid:sta), names_to = c('item')) %>%
+  filter(!is.na(value) & value>= 0) |> 
+  mutate(depth = 0, .after = sampledate) |> 
+  mutate(rep = 1, .after = depth)
+  
 LTERnutrients = loadLTERnutrients() %>%
   mutate(across(everything(), ~replace(., .<0 , NA))) %>%
   rename_all( ~ str_replace(., "_sloh", '.sloh')) %>%
@@ -83,8 +83,6 @@ LTERnutrients = loadLTERnutrients() %>%
                            TRUE ~ value)) %>% 
   mutate(item = case_when(str_detect(item, ".sloh") ~  str_remove(item, ".sloh"),
                           TRUE ~ item))
-# pivot_wider(names_from = item, values_from = value) 
-
 
 LTERions = loadLTERions() %>%
   mutate(across(everything(), ~replace(., .<0 , NA))) %>%
@@ -101,7 +99,8 @@ LTERions = loadLTERions() %>%
 matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','no3no2','nh4',
                                   'totnuf','totnf','drp','totpuf','totpf',
                                   'ph','alk',
-                                  'ca','mg','na','k','so4','cl','cond'),
+                                  'ca','mg','na','k','so4','cl','cond',
+                                  'secview','secnview'),
                         names = c('Water Temperature (°C)',
                                   'Dissolved Oxygen (mg/L)',
                                   'Dissolved Oxygen (% sat)',
@@ -124,10 +123,13 @@ matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','
                                   'Potassium (mg/L)',
                                   'Sulfate (mg/L)',
                                   'Chloride (mg/L)',
-                                  'Specific Conductance (µS/cm)'),
-                        url = c(rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=29&revision=29',3),
-                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=1&revision=52',13),
-                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=2&revision=34',7)))
+                                  'Specific Conductance (µS/cm)',
+                                  'Secchi with viewer',
+                                  'Secchi without viewer'),
+                        url = c(rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=29&revision=35',3),
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=1&revision=59',13),
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=2&revision=37',7),
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=31&revision=32',2)))
 
 lakelocations = data.frame(Lake = c("Allequash Lake", "Big Muskellunge Lake", 
                                     "Crystal Bog", "Crystal Lake", "Sparkling Lake", "Trout Bog", 
@@ -138,7 +140,7 @@ lakelocations = data.frame(Lake = c("Allequash Lake", "Big Muskellunge Lake",
                                     -89.686283, -89.665017, -89.40545, -89.36086, -89.42499, 
                                     -89.65173))
 
-allLTER = LTERnutrients %>% bind_rows(LTERtemp) %>% bind_rows(LTERions) %>% 
+allLTER = LTERnutrients %>% bind_rows(LTERtemp) %>% bind_rows(LTERions) %>% bind_rows(LTERsecchi) |> 
   mutate(lakename = case_when(lakeid == 'AL' ~ 'Allequash',
                               lakeid == 'BM' ~ 'Big Musky',
                               lakeid == 'CR' ~ 'Crystal',
