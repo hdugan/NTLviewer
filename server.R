@@ -190,7 +190,7 @@ shinyServer(function(input, output) {
     b = allLTER %>% 
       filter(lakename %in% lakes) %>% 
       filter(item == varname()) %>% 
-      group_by(depth) %>% tally() %>% filter(n > 80) %>% pull(depth)
+      group_by(depth) %>% tally() %>% filter(n > 50) %>% pull(depth)
     return(b)
   })
   
