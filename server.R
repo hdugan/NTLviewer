@@ -21,7 +21,7 @@ loadLTERions <- function() {
   # Data set title: North Temperate Lakes LTER:
   # Chemical Limnology of Primary Study Lakes: Major Ions 1981 - current
   
-  inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/2/38/0701a84081989bb1ff37d621a6c4560a"  
+  inUrl2  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/2/38/0701a84081989bb1ff37d621a6c4560a"  
   
   LTERions = read_csv(inUrl2)
   
@@ -97,7 +97,7 @@ LTERions = loadLTERions() %>%
   dplyr::select(-error)
 
 matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','no3no2','nh4',
-                                  'totnuf','totnf','drp','totpuf','totpf',
+                                  'totnuf','totnf','drp','totpuf','totpf', 'drsif',
                                   'ph','alk',
                                   'ca','mg','na','k','so4','cl','cond',
                                   'secview','secnview'),
@@ -115,6 +115,7 @@ matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','
                                   'Dissolved Reactive Phosphorus (µg/L)',
                                   'Total Phosphorus unfiltered (µg/L)',
                                   'Total Phosphorus filtered (µg/L)',
+                                  'Dissolved Reactive Silica (µg/L)',
                                   'pH',
                                   'Alkalinity (ueq/L)',
                                   'Calcium (mg/L)',
@@ -127,7 +128,7 @@ matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','
                                   'Secchi with viewer',
                                   'Secchi without viewer'),
                         url = c(rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=29&revision=35',3),
-                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=1&revision=59',13),
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=1&revision=59',14),
                           rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=2&revision=37',7),
                           rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=31&revision=32',2)))
 

@@ -53,7 +53,8 @@ shinyUI(fluidPage(
                                    'Total Nitrogen filtered (µg/L)',
                                    'Dissolved Reactive Phosphorus (µg/L)',
                                    'Total Phosphorus unfiltered (µg/L)',
-                                   'Total Phosphorus filtered (µg/L)'),
+                                   'Total Phosphorus filtered (µg/L)',
+                                   'Dissolved Reactive Silica (µg/L)'),
                                  Ions = c(
                                    'pH',
                                    'Alkalinity (ueq/L)',
