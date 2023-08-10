@@ -7,21 +7,21 @@ library(lubridate)
 library(leaflet)
 
 loadLTERnutrients <- function() {
-  # Package ID: knb-lter-ntl.1.59 Cataloging System:https://pasta.edirepository.org.
+  # Package ID: knb-lter-ntl.1.60 Cataloging System:https://pasta.edirepository.org.
   # Data set title: North Temperate Lakes LTER:
   # Chemical Limnology of Primary Study Lakes: Nutrients, pH and Carbon 1981 - current
   
-  inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/1/59/0ff1fd13116d6097376e3745194cdc5f" 
+  inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/1/60/0ff1fd13116d6097376e3745194cdc5f"  
   
   LTERnutrients = read_csv(inUrl1)
 }
 
 loadLTERions <- function() {
-  # Package ID: knb-lter-ntl.2.37 Cataloging System:https://pasta.edirepository.org.
+  # Package ID: knb-lter-ntl.2.38 Cataloging System:https://pasta.edirepository.org.
   # Data set title: North Temperate Lakes LTER:
   # Chemical Limnology of Primary Study Lakes: Major Ions 1981 - current
   
-  inUrl2  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/2/37/0701a84081989bb1ff37d621a6c4560a" 
+  inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/2/38/0701a84081989bb1ff37d621a6c4560a"  
   
   LTERions = read_csv(inUrl2)
   
