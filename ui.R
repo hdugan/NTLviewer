@@ -42,7 +42,8 @@ shinyUI(fluidPage(
                   label = 'Choose variable', 
                   choices = list(Physical = c('Water Temperature (°C)',
                                               'Dissolved Oxygen (mg/L)',
-                                              'Dissolved Oxygen (% sat)'),
+                                              'Dissolved Oxygen (% sat)',
+                                              'Lake ice duration (days)'),
                                  Nutrients = c(
                                    'Dissolved Organic Carbon (mg/L)',
                                    'Dissolved Inorganic Carbon (mg/L)',
@@ -68,9 +69,7 @@ shinyUI(fluidPage(
                                    'Specific Conductance (µS/cm)'),
                                  Secchi = c(
                                    'Secchi with viewer',
-                                   'Secchi without viewer'),
-                                 Ice = c(
-                                   'Lake ice duration (days)')),
+                                   'Secchi without viewer')),
                   selected = 'Water Temperature (degC)'),
       
       uiOutput("datadepths"),
