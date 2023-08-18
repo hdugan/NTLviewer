@@ -5,15 +5,21 @@ library(shiny)
 library(tidyverse)
 library(lubridate)
 library(leaflet)
+library(EDIutils)
 
 loadLTERnutrients <- function() {
   # Package ID: knb-lter-ntl.1.60 Cataloging System:https://pasta.edirepository.org.
   # Data set title: North Temperate Lakes LTER:
   # Chemical Limnology of Primary Study Lakes: Nutrients, pH and Carbon 1981 - current
   
-  inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/1/60/0ff1fd13116d6097376e3745194cdc5f"  
+  # inUrl1  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/1/60/0ff1fd13116d6097376e3745194cdc5f"  
+  # LTERnutrients = read_csv(inUrl1)
   
-  LTERnutrients = read_csv(inUrl1)
+  revision = list_data_package_revisions(scope = 'knb-lter-ntl', identifier = "1", filter = "newest")
+  packageid = paste0('knb-lter-ntl.1.', revision)
+  res = read_data_entity_names(packageid)
+  raw = read_data_entity(packageId = packageid, entityId = res$entityId[1])
+  LTERnutrients = read_csv(file = raw)
 }
 
 loadLTERions <- function() {
@@ -21,9 +27,14 @@ loadLTERions <- function() {
   # Data set title: North Temperate Lakes LTER:
   # Chemical Limnology of Primary Study Lakes: Major Ions 1981 - current
   
-  inUrl2  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/2/38/0701a84081989bb1ff37d621a6c4560a"  
+  # inUrl2  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/2/38/0701a84081989bb1ff37d621a6c4560a"  
+  # LTERions = read_csv(inUrl2)
   
-  LTERions = read_csv(inUrl2)
+  revision = list_data_package_revisions(scope = 'knb-lter-ntl', identifier = "2", filter = "newest")
+  packageid = paste0('knb-lter-ntl.2.', revision)
+  res = read_data_entity_names(packageid)
+  raw = read_data_entity(packageId = packageid, entityId = res$entityId[1])
+  LTERions = read_csv(file = raw)
   
 }
 
@@ -32,18 +43,28 @@ loadLTERtemp <- function() {
   # Data set title: North Temperate Lakes LTER:
   # Physical Limnology of Primary Study Lakes 1981 - current
   
-  inUrl3  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/29/35/03e232a1b362900e0f059859abe8eb97"
+  # inUrl3  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/29/35/03e232a1b362900e0f059859abe8eb97"
+  # LTERtemp = read_csv(inUrl3)
   
-  LTERtemp = read_csv(inUrl3)
+  revision = list_data_package_revisions(scope = 'knb-lter-ntl', identifier = "29", filter = "newest")
+  packageid = paste0('knb-lter-ntl.29.', revision)
+  res = read_data_entity_names(packageid)
+  raw = read_data_entity(packageId = packageid, entityId = res$entityId[1])
+  LTERtemp = read_csv(file = raw)
 }
 
 loadLTERsecchi <- function() {
   # Package ID: knb-lter-ntl.31.32 Cataloging System:https://pasta.edirepository.org.
   # Data set title: North Temperate Lakes LTER: Secchi Disk Depth; Other Auxiliary Base Crew Sample Data 1981 - current.
   
-  inUrl4  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/31/32/d01c782e0601d2217b94dd614444bd33"
+  # inUrl4  <- "https://pasta.lternet.edu/package/data/eml/knb-lter-ntl/31/32/d01c782e0601d2217b94dd614444bd33"
+  # LTERsecchi = read_csv(inUrl4)
   
-  LTERsecchi = read_csv(inUrl4)
+  revision = list_data_package_revisions(scope = 'knb-lter-ntl', identifier = "31", filter = "newest")
+  packageid = paste0('knb-lter-ntl.31.', revision)
+  res = read_data_entity_names(packageid)
+  raw = read_data_entity(packageId = packageid, entityId = res$entityId[1])
+  LTERsecchi = read_csv(file = raw)
 }
 
 
@@ -127,10 +148,10 @@ matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','
                                   'Specific Conductance (µS/cm)',
                                   'Secchi with viewer',
                                   'Secchi without viewer'),
-                        url = c(rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=29&revision=35',3),
-                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=1&revision=59',14),
-                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=2&revision=37',7),
-                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=31&revision=32',2)))
+                        url = c(rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=29',3),
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=1',14),
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=2',7),
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=31',2)))
 
 lakelocations = data.frame(Lake = c("Allequash Lake", "Big Muskellunge Lake", 
                                     "Crystal Bog", "Crystal Lake", "Sparkling Lake", "Trout Bog", 

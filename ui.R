@@ -5,6 +5,7 @@ library(shiny)
 library(tidyverse)
 library(lubridate)
 library(leaflet)
+library(EDIutils)
 
 # Define UI for data viewer application
 shinyUI(fluidPage(
