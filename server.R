@@ -67,6 +67,35 @@ loadLTERsecchi <- function() {
   LTERsecchi = read_csv(file = raw)
 }
 
+loadLTERice <- function() {
+  revision = list_data_package_revisions(scope = 'knb-lter-ntl', identifier = "32", filter = "newest")
+  packageid = paste0('knb-lter-ntl.32.', revision)
+  res = read_data_entity_names(packageid)
+  raw = read_data_entity(packageId = packageid, entityId = res$entityId[1])
+  
+  # Load northern data
+  LTERiceN = read_csv(file = raw) |> 
+    mutate(firstice_lag = lag(firstice)) |> 
+    mutate(leap = leap_year(year)) |> 
+    mutate(doys = if_else(leap == TRUE, 366, 365)) |> 
+    mutate(firstice_lag = if_else(firstice_lag < 60, 
+                                  firstice_lag + doys, firstice_lag)) |> 
+    mutate(duration = (doys-firstice_lag) + firstopen) |> 
+    select(lakeid, year, duration)
+  
+  # Load southern data
+  revision = list_data_package_revisions(scope = 'knb-lter-ntl', identifier = "33", filter = "newest")
+  packageid = paste0('knb-lter-ntl.33.', revision)
+  res = read_data_entity_names(packageid)
+  raw = read_data_entity(packageId = packageid, entityId = res$entityId[1])
+  LTERiceS = read_csv(file = raw) |> 
+    filter(ice_duration > 0) |> 
+    select(lakeid, year = year4, duration = ice_duration)
+  
+  # Join N and S datasets
+  LTERiceN |> bind_rows(LTERiceS)
+}
+
 
 LTERtemp = 
   loadLTERtemp() %>%
@@ -117,11 +146,19 @@ LTERions = loadLTERions() %>%
   filter(!str_detect(error,'A|K|L|H') | is.na(error)) %>%
   dplyr::select(-error)
 
+LTERice = loadLTERice() |> 
+  rename(year4 = year, value = duration) |> 
+  mutate(item = 'iceduration') |> 
+  mutate(sampledate = as.Date(paste0(year4,'-01-01'))) |> 
+  mutate(daynum = yday(sampledate)) |> 
+  mutate(depth = 0, rep = 1, sta = 1) |> 
+  select(lakeid, year4, daynum, sampledate, depth, rep, sta, item, value)
+
 matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','no3no2','nh4',
                                   'totnuf','totnf','drp','totpuf','totpf', 'drsif',
                                   'ph','alk',
                                   'ca','mg','na','k','so4','cl','cond',
-                                  'secview','secnview'),
+                                  'secview','secnview','iceduration'),
                         names = c('Water Temperature (°C)',
                                   'Dissolved Oxygen (mg/L)',
                                   'Dissolved Oxygen (% sat)',
@@ -147,11 +184,13 @@ matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','
                                   'Chloride (mg/L)',
                                   'Specific Conductance (µS/cm)',
                                   'Secchi with viewer',
-                                  'Secchi without viewer'),
+                                  'Secchi without viewer',
+                                  'Lake ice duration (days)'),
                         url = c(rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=29',3),
                           rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=1',14),
                           rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=2',7),
-                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=31',2)))
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=31',2),
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=32',1)))
 
 lakelocations = data.frame(Lake = c("Allequash Lake", "Big Muskellunge Lake", 
                                     "Crystal Bog", "Crystal Lake", "Sparkling Lake", "Trout Bog", 
@@ -163,6 +202,7 @@ lakelocations = data.frame(Lake = c("Allequash Lake", "Big Muskellunge Lake",
                                     -89.65173))
 
 allLTER = LTERnutrients %>% bind_rows(LTERtemp) %>% bind_rows(LTERions) %>% bind_rows(LTERsecchi) |> 
+  bind_rows(LTERice) |> 
   mutate(lakename = case_when(lakeid == 'AL' ~ 'Allequash',
                               lakeid == 'BM' ~ 'Big Musky',
                               lakeid == 'CR' ~ 'Crystal',
@@ -209,10 +249,15 @@ shinyServer(function(input, output) {
     } else {
       lakes = input$input.lake
     }
-    b = allLTER %>% 
-      filter(lakename %in% lakes) %>% 
-      filter(item == varname()) %>% 
-      group_by(depth) %>% tally() %>% filter(n > 50) %>% pull(depth)
+    
+    if (varname() == 'iceduration') {
+      b = 0
+    } else {
+      b = allLTER %>% 
+        filter(lakename %in% lakes) %>% 
+        filter(item == varname()) %>% 
+        group_by(depth) %>% tally() %>% filter(n > 50) %>% pull(depth)
+    }
     return(b)
   })
   

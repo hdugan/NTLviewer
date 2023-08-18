@@ -68,7 +68,9 @@ shinyUI(fluidPage(
                                    'Specific Conductance (µS/cm)'),
                                  Secchi = c(
                                    'Secchi with viewer',
-                                   'Secchi without viewer')),
+                                   'Secchi without viewer'),
+                                 Ice = c(
+                                   'Lake ice duration (days)')),
                   selected = 'Water Temperature (degC)'),
       
       uiOutput("datadepths"),
