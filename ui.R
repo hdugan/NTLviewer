@@ -12,7 +12,7 @@ shinyUI(fluidPage(
   
   # Application title
   # titlePanel("NTL-LTER data viewer"),
-  titlePanel(title=div(img(src="https://lter.limnology.wisc.edu/sites/default/files/ntl/logos/NTL_logo_notext.png",
+  titlePanel(title=div(img(src="https://lter.limnology.wisc.edu/wp-content/uploads/sites/2029/2023/06/NTL_logo_notext-768x768.png",
                            height="5%", width = "5%"),
                        "NTL-LTER data viewer")),
   
