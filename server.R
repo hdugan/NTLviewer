@@ -96,6 +96,39 @@ loadLTERice <- function() {
   LTERiceN |> bind_rows(LTERiceS)
 }
 
+loadLTERzoop <- function() {
+  revision = list_data_package_revisions(scope = 'knb-lter-ntl', identifier = "37", filter = "newest")
+  packageid = paste0('knb-lter-ntl.37.', revision)
+  res = read_data_entity_names(packageid)
+  raw = read_data_entity(packageId = packageid, entityId = res$entityId[1])
+  
+  # Load northern data
+  LTERzoopN = read_csv(file = raw)
+  
+  # Load southern data
+  revision = list_data_package_revisions(scope = 'knb-lter-ntl', identifier = "90", filter = "newest")
+  packageid = paste0('knb-lter-ntl.90.', revision)
+  res = read_data_entity_names(packageid)
+  raw = read_data_entity(packageId = packageid, entityId = res$entityId[1])
+  LTERzoopS = read_csv(file = raw)
+  
+  # Join N and S datasets
+  LTERzoopN |> bind_rows(LTERzoopS) |> 
+    mutate(code = floor(species_code/10000)) |>
+    mutate(zoopGroup = case_when(code == 1 ~ 'copepod nauplii',
+                                 code == 2 ~ 'cyclopoid',
+                                 code == 3 ~ 'calanoid',
+                                 code == 4 ~ 'harpacticoid',
+                                 code == 5 ~ 'cladocera',
+                                 code == 6 ~ 'rotifer',
+                                 code == 7 ~ 'unknown',
+                                 code == 8 ~ 'unknown',
+                                 code == 9 ~ 'unknown')) |> 
+    filter(code %in% c(2,3,5,6)) |> # cladocera and copepods
+    group_by(lakeid, year4, sample_date, zoopGroup) |> 
+    summarise(value = sum(density)) |> 
+    rename(item = zoopGroup, sampledate = sample_date)
+}
 
 LTERtemp = 
   loadLTERtemp() %>%
@@ -154,11 +187,17 @@ LTERice = loadLTERice() |>
   mutate(depth = 0, rep = 1, sta = 1) |> 
   select(lakeid, year4, daynum, sampledate, depth, rep, sta, item, value)
 
+LTERzoops = loadLTERzoop() |> 
+  mutate(daynum = yday(sampledate)) |> 
+  mutate(depth = 0, rep = 1, sta = 1) |> 
+  select(lakeid, year4, daynum, sampledate, depth, rep, sta, item, value)
+
 matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','no3no2','nh4',
                                   'totnuf','totnf','drp','totpuf','totpf', 'drsif',
                                   'ph','alk',
                                   'ca','mg','na','k','so4','cl','cond',
-                                  'secview','secnview','iceduration'),
+                                  'secview','secnview','iceduration',
+                                  'cladocera','calanoid','cyclopoid','rotifer'),
                         names = c('Water Temperature (°C)',
                                   'Dissolved Oxygen (mg/L)',
                                   'Dissolved Oxygen (% sat)',
@@ -185,12 +224,17 @@ matchtable = data.frame(vars =  c('wtemp','o2','o2sat','doc','dic','toc','tic','
                                   'Specific Conductance (µS/cm)',
                                   'Secchi with viewer',
                                   'Secchi without viewer',
-                                  'Lake ice duration (days)'),
+                                  'Lake ice duration (days)',
+                                  'Cladocera (#/L)',
+                                  'Calanoid copepod (#/L)',
+                                  'Cyclopoid copepod (#/L)',
+                                  'Rotifer (#/L)'),
                         url = c(rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=29',3),
                           rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=1',14),
                           rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=2',7),
                           rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=31',2),
-                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=32',1)))
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=32',1),
+                          rep('https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=37',4)))
 
 lakelocations = data.frame(Lake = c("Allequash Lake", "Big Muskellunge Lake", 
                                     "Crystal Bog", "Crystal Lake", "Sparkling Lake", "Trout Bog", 
@@ -202,7 +246,7 @@ lakelocations = data.frame(Lake = c("Allequash Lake", "Big Muskellunge Lake",
                                     -89.65173))
 
 allLTER = LTERnutrients %>% bind_rows(LTERtemp) %>% bind_rows(LTERions) %>% bind_rows(LTERsecchi) |> 
-  bind_rows(LTERice) |> 
+  bind_rows(LTERice, LTERzoops) |> 
   mutate(lakename = case_when(lakeid == 'AL' ~ 'Allequash',
                               lakeid == 'BM' ~ 'Big Musky',
                               lakeid == 'CR' ~ 'Crystal',

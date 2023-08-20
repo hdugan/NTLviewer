@@ -6,6 +6,8 @@ library(tidyverse)
 library(lubridate)
 library(leaflet)
 library(EDIutils)
+library(shinycssloaders)
+
 
 # Define UI for data viewer application
 shinyUI(fluidPage(
@@ -69,7 +71,12 @@ shinyUI(fluidPage(
                                    'Specific Conductance (µS/cm)'),
                                  Secchi = c(
                                    'Secchi with viewer',
-                                   'Secchi without viewer')),
+                                   'Secchi without viewer'),
+                                 Zooplankton = c(
+                                   'Cladocera (#/L)',
+                                   'Calanoid copepod (#/L)',
+                                   'Cyclopoid copepod (#/L)',
+                                   'Rotifer (#/L)')),
                   selected = 'Water Temperature (degC)'),
       
       uiOutput("datadepths"),
@@ -90,7 +97,7 @@ shinyUI(fluidPage(
     # Show the tabs 
     mainPanel(
       tabsetPanel(
-        tabPanel("Data", plotOutput("distPlot")),
+        tabPanel("Data", plotOutput("distPlot") %>% withSpinner()),
         tabPanel("Map", leafletOutput("myMap"))
       )
     )
