@@ -6,6 +6,7 @@ library(tidyverse)
 library(lubridate)
 library(leaflet)
 library(EDIutils)
+library(shinycssloaders)
 
 loadLTERnutrients <- function() {
   # Package ID: knb-lter-ntl.1.60 Cataloging System:https://pasta.edirepository.org.
