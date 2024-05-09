@@ -76,12 +76,6 @@ loadLTERice <- function() {
   
   # Load northern data
   LTERiceN = read_csv(file = raw) |> 
-    mutate(firstice_lag = lag(firstice)) |> 
-    mutate(leap = leap_year(year)) |> 
-    mutate(doys = if_else(leap == TRUE, 366, 365)) |> 
-    mutate(firstice_lag = if_else(firstice_lag < 60, 
-                                  firstice_lag + doys, firstice_lag)) |> 
-    mutate(duration = (doys-firstice_lag) + firstopen) |> 
     select(lakeid, year, duration)
   
   # Load southern data
@@ -90,8 +84,7 @@ loadLTERice <- function() {
   res = read_data_entity_names(packageid)
   raw = read_data_entity(packageId = packageid, entityId = res$entityId[1])
   LTERiceS = read_csv(file = raw) |> 
-    filter(ice_duration > 0) |> 
-    select(lakeid, year = year4, duration = ice_duration)
+    select(lakeid, year, duration)
   
   # Join N and S datasets
   LTERiceN |> bind_rows(LTERiceS)
