@@ -147,18 +147,18 @@ LTERsecchi =
   
 LTERnutrients = loadLTERnutrients() %>%
   mutate(across(everything(), ~replace(., .<0 , NA))) %>%
-  rename_all( ~ str_replace(., "_sloh", '.sloh')) %>%
-  rename_all( ~ str_replace(., "_n", '.n')) %>%
-  rename_at(vars(ph:drsif.sloh), ~ str_c("value_",.)) %>%
-  rename_at(vars(flagdepth:flagdrsif.sloh), ~ str_c("error_",.)) %>%
+  # rename_all( ~ str_replace(., "_sloh", '.sloh')) %>%
+  # rename_all( ~ str_replace(., "_n", '.n')) %>%
+  rename_at(vars(ph:drsif_WSLH), ~ str_c("value_",.)) %>%
+  rename_at(vars(flagdepth:flagdrsif_WSLH), ~ str_c("error_",.)) %>%
   rename_all(~str_replace_all(.,"flag","")) %>%
   pivot_longer(-(lakeid:event), names_to = c('.value','item'), names_sep = '_') %>%
   filter(!is.na(value) & value>= 0) %>%
-  filter(!str_detect(error,'A|K|L|H') | is.na(error)) %>%
+  filter(!str_detect(error,'A|K|L|H|U') | is.na(error)) %>%
   dplyr::select(-error) %>% 
-  mutate(value = case_when(str_detect(item, ".sloh") ~ value*1000, #change sloh from mg to µg
+  mutate(value = case_when(str_detect(item, "_WSLH") ~ value*1000, #change sloh from mg to µg
                            TRUE ~ value)) %>% 
-  mutate(item = case_when(str_detect(item, ".sloh") ~  str_remove(item, ".sloh"),
+  mutate(item = case_when(str_detect(item, "_WSLH") ~  str_remove(item, "_WSLH"),
                           TRUE ~ item))
 
 LTERions = loadLTERions() %>%
@@ -170,7 +170,7 @@ LTERions = loadLTERions() %>%
   rename_all(~str_replace_all(.,"flag","")) %>%
   pivot_longer(-(lakeid:event), names_to = c('.value','item'), names_sep = '_') %>%
   filter(!is.na(value) & value>= 0) %>%
-  filter(!str_detect(error,'A|K|L|H') | is.na(error)) %>%
+  filter(!str_detect(error,'A|K|L|H|U') | is.na(error)) %>%
   dplyr::select(-error)
 
 LTERice = loadLTERice() |> 

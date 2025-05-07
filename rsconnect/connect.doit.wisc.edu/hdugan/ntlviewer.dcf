@@ -5,9 +5,9 @@ account: hdugan
 server: connect.doit.wisc.edu
 hostUrl: https://connect.doit.wisc.edu/__api__
 appId: 38
-bundleId: 375
+bundleId: 1241
 url: https://connect.doit.wisc.edu/NTLviewer/
-when: 1702073189.59976
-lastSyncTime: 1702073189.59976
+when: 1715272710.14424
+lastSyncTime: 1715272710.14425
 asMultiple: FALSE
 asStatic: FALSE
